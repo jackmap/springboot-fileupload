@@ -67,14 +67,22 @@ public class UploadController {
             return null;
         }
         List<Map<String, String>> results = new ArrayList<>();
+        String filepath="E:\\app\\chapter16\\";
+        File _file=new File(filepath);
+        if(!_file.exists()) {
+        	_file.mkdirs();
+        }
         for (MultipartFile file : files) {
-            // TODO Spring Mvc 提供的写入方式
-            file.transferTo(new File("F:\\app\\chapter16\\" + file.getOriginalFilename()));
-            Map<String, String> map = new HashMap<>(16);
-            map.put("contentType", file.getContentType());
-            map.put("fileName", file.getOriginalFilename());
-            map.put("fileSize", file.getSize() + "");
-            results.add(map);
+        	Map<String, String> map = new HashMap<>(16);
+        	if(file.isEmpty()) {
+        		results.add(map);
+        	}else {
+	            file.transferTo(new File(filepath + file.getOriginalFilename()));
+	            map.put("contentType", file.getContentType());
+	            map.put("fileName", file.getOriginalFilename());
+	            map.put("fileSize", file.getSize() + "");
+	            results.add(map);
+        	}
         }
         return results;
     }
@@ -82,8 +90,13 @@ public class UploadController {
     @PostMapping("/upload3")
     @ResponseBody
     public void upload2(String base64) throws IOException {
+    	String filepath="E:\\app\\chapter16\\";
+        File file=new File(filepath);
+        if(!file.exists()) {
+        	file.mkdirs();
+        }
         // TODO BASE64 方式的 格式和名字需要自己控制（如 png 图片编码后前缀就会是 data:image/png;base64,）
-        final File tempFile = new File("F:\\app\\chapter16\\test.jpg");
+        final File tempFile = new File(filepath+"test.jpg");
         // TODO 防止有的传了 data:image/png;base64, 有的没传的情况
         String[] d = base64.split("base64,");
         final byte[] bytes = Base64Utils.decodeFromString(d.length > 1 ? d[1] : d[0]);
